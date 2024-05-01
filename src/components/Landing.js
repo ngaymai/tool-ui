@@ -12,7 +12,13 @@ import CustomInput from "./CustomInput";
 import OutputDetails from "./OutputDetails";
 import ThemeDropdown from "./ThemeDropdown";
 import LanguagesDropdown from "./LanguagesDropDown";
+import {vulType} from "../constants/vulType"
 import { saveAs } from 'file-saver';
+import TypeDropdown from "../components/TypeDropdown"
+import logo from '../images/bkhcm.png';
+import { TailSpin } from 'react-loading-icons'
+import ClipLoader from "react-spinners/ClipLoader";
+
 
 const javascriptDefault =
   `// Write your C++ code here 
@@ -24,6 +30,7 @@ int main() {
 }`;
 
 const Landing = () => {
+  console.log(logo)
   const [code, setCode] = useState(javascriptDefault);
   const [customInput, setCustomInput] = useState("");
   const [outputDetails, setOutputDetails] = useState(null);
@@ -34,10 +41,17 @@ const Landing = () => {
   const [upload, setUpload] = useState(0);
   const enterPress = useKeyPress("Enter");
   const ctrlPress = useKeyPress("Control");
+  const [vultyp, setVulType] = useState(vulType[0])
+  const [loading, setLoading] = useState(false)
 
   const onSelectChange = (sl) => {
     console.log("selected Option...", sl);
     setLanguage(sl);
+  };
+
+  const onVulTypeChange = (vt) => {
+    console.log("selected Vulnerability Type...", vt);
+    setVulType(vt);
   };
 
   useEffect(() => {
@@ -47,6 +61,7 @@ const Landing = () => {
       handleCompile();
     }
   }, [ctrlPress, enterPress]);
+
   const onChange = (action, data) => {
     switch (action) {
       case "code": {
@@ -58,6 +73,7 @@ const Landing = () => {
       }
     }
   };
+
   const handleCompile = () => {
     setProcessing(true);
     const formData = {
@@ -202,14 +218,31 @@ const Landing = () => {
   const handleCheck = () => {
     const formData = new FormData();
     formData.append('file', new Blob([code], { type: 'text/php' }), 'code.php');
-
-    axios.post('/upload', formData)
+    // console.log(vultyp.id)
+    setLoading(true)
+    if (vultyp.id === 1) {
+      console.log(vultyp.id)
+      axios.post('http://localhost:8080/predict/SQLi', formData)
       .then((res) => {
         // Handle the response
+        console.log(res)
+        setLoading(false)
       })
       .catch((err) => {
         // Handle the error
       });
+    } else {
+      axios.post('http://localhost:8080/predict/XSS', formData)
+      .then((res) => {
+        // Handle the response
+        console.log(res)
+        setLoading(false)
+      })
+      .catch((err) => {
+        // Handle the error
+      });
+    }
+    
   };
 
   const handleDownload = () => {
@@ -233,8 +266,12 @@ const Landing = () => {
         draggable
         pauseOnHover
       />
-
-      <div className="h-4 w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+{/* h-24 w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 */}
+      <div className="h-24 w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
+        <img
+        className="absolute h-20 mt-2 ml-5" 
+        src={logo} alt="logo" />
+      </div>
       <div className="flex flex-row">
         <div className="px-4 py-2">
           <LanguagesDropdown onSelectChange={onSelectChange} />
@@ -243,6 +280,11 @@ const Landing = () => {
           <ThemeDropdown
             handleThemeChange={handleThemeChange}
             theme={theme}
+          />
+        </div>
+        <div className="px-4 py-2">
+          <TypeDropdown
+            onSelectChange={onVulTypeChange}
           />
         </div>
         <div className="pl-10 py-2">
@@ -295,9 +337,19 @@ const Landing = () => {
               >
                 {processing ? "Processing..." : "Compile and Execute"}
               </button>
-              <button onClick={handleCheck}
+
+              {!loading ? (<button onClick={handleCheck}
                 className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-semibold hover:text-black mt-5 py-2 px-4 border border-blue-500 hover:border-transparent rounded"
-              >Check</button>
+              >Check</button>) : 
+              (<ClipLoader className = "mt-5 py-2 px-4"
+                  // color={color}
+                  loading={loading}
+                  // cssOverride={override}
+                  // size={150}
+                  aria-label="Loading Spinner"
+                  data-testid="loader"
+              />)}
+              
 
             </div>
 
