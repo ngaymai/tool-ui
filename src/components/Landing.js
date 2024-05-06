@@ -15,10 +15,11 @@ import LanguagesDropdown from "./LanguagesDropDown";
 import {vulType} from "../constants/vulType"
 import { saveAs } from 'file-saver';
 import TypeDropdown from "../components/TypeDropdown"
-import logo from '../images/bkhcm.png';
+import logo from '../images/logo.png';
+import cse from '../images/cselogo.png'
 import { TailSpin } from 'react-loading-icons'
 import ClipLoader from "react-spinners/ClipLoader";
-
+import Swal from "sweetalert2";
 
 const javascriptDefault =
   `// Write your C++ code here 
@@ -225,7 +226,22 @@ const Landing = () => {
       axios.post('http://localhost:8080/predict/SQLi', formData)
       .then((res) => {
         // Handle the response
-        console.log(res)
+        if (res.data.result == 'Safe') {
+          Swal.fire({
+            title: "Good job!",
+            text: "This is Safe file!",
+            icon: "success"
+          });
+        }
+        else {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "This is Unsafe file!",
+            footer: '<a href="#">Why do I have this issue?</a>'
+          });
+        }
+        console.log(res.data)
         setLoading(false)
       })
       .catch((err) => {
@@ -235,7 +251,22 @@ const Landing = () => {
       axios.post('http://localhost:8080/predict/XSS', formData)
       .then((res) => {
         // Handle the response
-        console.log(res)
+        if (res.data.result == 'Safe') {
+          Swal.fire({
+            title: "Good job!",
+            text: "This is Safe file!",
+            icon: "success"
+          });
+        }
+        else {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "This is Unsafe file!",
+            footer: '<a href="#">Why do I have this issue?</a>'
+          });
+        }
+        console.log(res.data)
         setLoading(false)
       })
       .catch((err) => {
@@ -267,10 +298,24 @@ const Landing = () => {
         pauseOnHover
       />
 {/* h-24 w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 */}
-      <div className="h-24 w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
-        <img
-        className="absolute h-20 mt-2 ml-5" 
+    <div className="grid grid-flow-col auto-cols-max h-24 w-full bg-gradient-to-r from-cyan-500 to-blue-500">
+         
+            <div> 
+      <img
+        className="h-20 mt-2 ml-5" 
         src={logo} alt="logo" />
+          </div>
+
+          <div>
+      <img
+        className="absolute h-20 mt-2 ml-5" 
+        src={cse} alt="logo" />
+          </div>
+      
+  
+        
+
+        
       </div>
       <div className="flex flex-row">
         <div className="px-4 py-2">
@@ -304,7 +349,7 @@ const Landing = () => {
         </div>
 
         <div className="py-2">
-          <button onClick={handleFileSubmit} className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-semibold hover:text-black py-2 px-4 border border-blue-500 hover:border-transparent rounded">Submit</button>
+          <button onClick={handleFileSubmit} className="bg-gradient-to-r from-sky-500 to-indigo-500 text-white font-semibold hover:text-black py-2 px-4 border border-blue-500 hover:border-transparent rounded">Submit</button>
         </div>
 
       </div>
@@ -332,14 +377,14 @@ const Landing = () => {
               <button
                 onClick={handleCompile}
                 disabled={!code}
-                className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-semibold hover:text-black mt-5 py-2 px-4 border border-blue-500 hover:border-transparent rounded mr-10"
+                className="bg-gradient-to-r from-blue-500 from-sky-500 to-indigo-500 text-white font-semibold hover:text-black mt-5 py-2 px-4 border border-blue-500 hover:border-transparent rounded mr-10"
                 
               >
                 {processing ? "Processing..." : "Compile and Execute"}
               </button>
 
               {!loading ? (<button onClick={handleCheck}
-                className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-semibold hover:text-black mt-5 py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+                className="bg-gradient-to-r from-sky-500 to-indigo-500 to-pink-500 text-white font-semibold hover:text-black mt-5 py-2 px-4 border border-blue-500 hover:border-transparent rounded"
               >Check</button>) : 
               (<ClipLoader className = "mt-5 py-2 px-4"
                   // color={color}
